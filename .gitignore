@@ -1,3 +1,4 @@
+dist
 .idea
 terraform-provider-opencga
 go.*
