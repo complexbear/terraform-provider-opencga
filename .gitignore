@@ -1,7 +1,5 @@
 dist
-.gorelease*
 .idea
 terraform-provider-opencga
-go.*
 
 dist/
