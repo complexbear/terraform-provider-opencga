@@ -3,7 +3,7 @@ HOSTNAME=genomicsengland.co.uk
 NAMESPACE=opencb
 NAME=opencga
 BINARY=terraform-provider-${NAME}
-VERSION=0.2
+VERSION=0.2.1
 OS_ARCH=darwin_amd64
 
 default: help
