@@ -1,4 +1,4 @@
-resource "opencga_study" "lss_cohort" {
+resource "opencga_study" "a_cohort" {
   project = data.opencga_project.a_project.id
 
   name        = "Germline Study"
