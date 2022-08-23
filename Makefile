@@ -44,15 +44,3 @@ test:  ## Run terraform provider tests
 testacc: 
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
-run_example:  ## Run the terraform example which uses the provider on local opencga service
-	rm example/full_setup/.terraform.lock.hcl || true
-	cd example/full_setup && terraform init && terraform apply
-
-run_opencga:  ## Start the local opencga service
-	cd local_opencga_service && docker-compose up -d
-
-stop_opencga:  ## Stop the local opencga service
-	cd local_opencga_service && docker-compose down
-
-reset_opencga:  ## Clear down the opencga state
-	cd local_opencga_service && docker-compose down -v
