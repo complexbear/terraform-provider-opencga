@@ -1,9 +1,9 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=genomicsengland.co.uk
-NAMESPACE=opencb
+HOSTNAME=registry.terraform.io
+NAMESPACE=complexbear
 NAME=opencga
 BINARY=terraform-provider-${NAME}
-VERSION=0.2.1
+VERSION=0.2.2
 OS_ARCH=darwin_amd64
 
 default: help
