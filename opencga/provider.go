@@ -2,6 +2,7 @@ package opencga
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -64,14 +65,20 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	if (username != "") && (password != "") && (base_url != "") {
-		client := newClient(base_url)
-		err := client.Login(username, password)
-		if err != nil {
-			return nil, diag.FromErr(err)
-		}
-		return client, diags
+	if password == "" {
+		return nil, diag.Errorf("Missing password for OpenCGA user")
+	}
+	if username == "" {
+		return nil, diag.Errorf("Missing username for OpenCGA user")
+	}
+	if strings.HasPrefix(base_url, "http") == false {
+		return nil, diag.Errorf("Missing or bad base_url for OpenCGA service")
 	}
 
-	return nil, diags
+	client := newClient(base_url)
+	err := client.Login(username, password)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+	return client, diags
 }
