@@ -25,6 +25,7 @@ func resourceStudy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				DiffSuppressFunc:      projectDiffSuppressFunc,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -124,4 +125,10 @@ func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interfac
 	var diags diag.Diagnostics
 	fmt.Println("Pretending to delete but doing nothing....")
 	return diags
+}
+
+func projectDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
+    // There is no way to know the project that a study is in, by querying the study directly.
+    // Therefore we shall ignore this field when performing the state diff.
+    return true
 }
