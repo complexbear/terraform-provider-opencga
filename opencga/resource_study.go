@@ -3,6 +3,7 @@ package opencga
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -22,10 +23,10 @@ func resourceStudy() *schema.Resource {
 				Computed: true,
 			},
 			"project": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-				DiffSuppressFunc:      projectDiffSuppressFunc,
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				DiffSuppressFunc: projectDiffSuppressFunc,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -62,6 +63,7 @@ func resourceStudyCreate(ctx context.Context, d *schema.ResourceData, m interfac
 	}
 	params := map[string]string{
 		"projectId": d.Get("project").(string),
+		"exclude":   "groups",
 	}
 	path := "studies/create"
 	req, err := buildRequest(client, path, payload, params)
@@ -123,12 +125,12 @@ func resourceStudyUpdate(ctx context.Context, d *schema.ResourceData, m interfac
 func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	fmt.Println("Pretending to delete but doing nothing....")
+	log.Printf("Pretending to delete but doing nothing....")
 	return diags
 }
 
 func projectDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
-    // There is no way to know the project that a study is in, by querying the study directly.
-    // Therefore we shall ignore this field when performing the state diff.
-    return true
+	// There is no way to know the project that a study is in, by querying the study directly.
+	// Therefore we shall ignore this field when performing the state diff.
+	return true
 }

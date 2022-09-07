@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 
@@ -27,8 +28,9 @@ func resourceVariableSet() *schema.Resource {
 				Computed: true,
 			},
 			"study": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				DiffSuppressFunc: studyDiffSuppressFunc,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -104,10 +106,7 @@ func resourceVariableSetRead(ctx context.Context, d *schema.ResourceData, m inte
 	client := m.(*APIClient)
 
 	path := fmt.Sprintf("variableset/%s/info", d.Id())
-	params := map[string]string{
-		"study": d.Get("study").(string),
-	}
-	req, err := buildRequest(client, path, nil, params)
+	req, err := buildRequest(client, path, nil, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -128,7 +127,7 @@ func resourceVariableSetRead(ctx context.Context, d *schema.ResourceData, m inte
 	// convert variables json data struct to string for schema
 	variables_string, err := json.Marshal(variable_set.Variables)
 	if err != nil {
-		fmt.Println("Failed to marshall variable data")
+		log.Printf("Failed to marshall variable data")
 	}
 
 	d.Set("name", variable_set.Name)
@@ -145,8 +144,13 @@ func resourceVariableSetUpdate(ctx context.Context, d *schema.ResourceData, m in
 func resourceVariableSetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	fmt.Println("Pretending to delete but doing nothing....")
+	log.Printf("Pretending to delete but doing nothing....")
 	return diags
+}
+
+func studyDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
+	log.Printf("Ignoring study value in variable set resource")
+	return true
 }
 
 func variableDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
@@ -160,7 +164,7 @@ func variableDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceDa
 
 	// Must have equal item counts
 	if len(oldAttrMap) != len(newAttrMap) {
-		fmt.Printf(
+		log.Printf(
 			"Mismatched variable set counts. Old:%d, New:%d",
 			len(oldAttrMap),
 			len(newAttrMap),
@@ -179,7 +183,7 @@ func variableDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceDa
 	sort.Strings(newNames)
 	for i, n := range oldNames {
 		if n != newNames[i] {
-			fmt.Printf(
+			log.Printf(
 				"Mismatched variable set names. Old:%v, New:%v",
 				oldNames,
 				newNames,
@@ -188,6 +192,6 @@ func variableDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceDa
 		}
 	}
 
-	// TODO - check further the other attributes of the variable setss
+	// TODO - check further the other attributes of the variable sets
 	return true
 }

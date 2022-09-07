@@ -3,6 +3,7 @@ package opencga
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -107,6 +108,6 @@ func resourceStudyACLUpdate(ctx context.Context, d *schema.ResourceData, m inter
 func resourceStudyACLDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	fmt.Println("Pretending to delete but doing nothing....")
+	log.Printf("Pretending to delete but doing nothing....")
 	return diags
 }

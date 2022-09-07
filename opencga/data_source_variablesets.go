@@ -3,7 +3,7 @@ package opencga
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -81,7 +81,7 @@ func dataSourceVariableSetsRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 
-	fmt.Printf("VariableSets: %+v", variable_sets)
+	log.Printf("VariableSets: %+v", variable_sets)
 
 	// Store the variable set info in the resource data
 	if err := d.Set("variable_sets", flattenVariableSets(variable_sets)); err != nil {
