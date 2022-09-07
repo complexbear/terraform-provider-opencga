@@ -109,7 +109,7 @@ func (c *APIClient) Call(req *http.Request) (*Response, error) {
 	var jsondata map[string]interface{}
 	err = json.Unmarshal(rawdata, &jsondata)
 	if err != nil {
-		fmt.Printf("Failed to unmarshall data: %s", rawdata)
+		log.Printf("Failed to unmarshall data: %s", rawdata)
 		return nil, err
 	}
 	log.Printf("received: %v", jsondata)

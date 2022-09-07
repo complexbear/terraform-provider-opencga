@@ -3,6 +3,7 @@ package opencga
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -105,7 +106,7 @@ func dataSourceProjectsRead(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	fmt.Printf("projects: %+v", projects)
+	log.Printf("projects: %+v", projects)
 	d.SetId(computeProjectsDataSourceId(d))
 
 	// Store the project info in the resource data

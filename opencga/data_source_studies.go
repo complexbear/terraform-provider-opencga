@@ -3,6 +3,7 @@ package opencga
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -105,7 +106,7 @@ func dataSourceStudiesRead(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	fmt.Printf("Studies: %+v", studies)
+	log.Printf("Studies: %+v", studies)
 	d.SetId(computeStudiesDataSourceId(d))
 
 	// Store the study info in the resource data
