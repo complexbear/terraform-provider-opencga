@@ -45,6 +45,7 @@ func Provider() *schema.Provider {
 			"opencga_project":     resourceProject(),
 			"opencga_study":       resourceStudy(),
 			"opencga_study_acl":   resourceStudyACL(),
+			"opencga_study_group": resourceStudyGroup(),
 			"opencga_variableset": resourceVariableSet(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{

@@ -45,6 +45,15 @@ type StudyACL struct {
 }
 
 /*
+User groups configured for a study, eg @members or @admins
+To be used for creating AD groups
+*/
+type StudyGroup struct {
+	Id   string `mapstructure:"id"`
+	Name string `mapstructure:"name"`
+}
+
+/*
 VariableSet definition, but does not include definition of variables.
 Indend to support these via raw json structures in terraform projects.
 */
