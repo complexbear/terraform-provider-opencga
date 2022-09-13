@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -66,7 +65,7 @@ func resourceStudyACLCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	d.SetId(strconv.Itoa(0))
+	d.SetId(studyACL.Member)
 	resourceStudyACLRead(ctx, d, m)
 	return diags
 }
@@ -97,7 +96,6 @@ func resourceStudyACLRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	// TODO
 	return diags
 }
 
