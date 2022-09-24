@@ -33,9 +33,9 @@ provider "opencga" {
 
 ### Required
 
-- `base_url` (String)
-- `username` (String)
+- `base_url` (String) Host URL for OpenCGA REST API, e.g. https://opencga.mycompany.com
+- `username` (String) Username for OpenCGA login, must be admin user. May also be set via OPENCGA_USERNAME env var.
 
 ### Optional
 
-- `password` (String, Sensitive)
+- `password` (String, Sensitive) Password for OpenCGA login. Recommended to be set via OPENCGA_PASSWORD env var.

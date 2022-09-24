@@ -28,21 +28,24 @@ func resourceVariableSet() *schema.Resource {
 				Computed: true,
 			},
 			"study": &schema.Schema{
-				Type:             schema.TypeString,
-				Required:         true,
-				DiffSuppressFunc: studyDiffSuppressFunc,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The study that this variable set belongs to",
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Variable Set name",
 			},
 			"unique": &schema.Schema{
-				Type:     schema.TypeBool,
-				Required: true,
+				Type:        schema.TypeBool,
+				Required:    true,
+				Description: "True if there can only be 1 instance of this attached to a record item. False to allow for multiple instances.",
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Description, can be left blank",
 			},
 			"variables": &schema.Schema{
 				Type:                  schema.TypeString,
@@ -50,6 +53,7 @@ func resourceVariableSet() *schema.Resource {
 				ValidateFunc:          validation.StringIsJSON,
 				DiffSuppressFunc:      variableDiffSuppressFunc,
 				DiffSuppressOnRefresh: true,
+				Description:           "Json content representing the variables in this variable set. Json definitions can be read directly from the GelReportModels repo.",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -76,6 +80,9 @@ func resourceVariableSetCreate(ctx context.Context, d *schema.ResourceData, m in
 		"description": d.Get("description").(string),
 		"unique":      d.Get("unique").(bool),
 		"variables":   variables_json,
+	}
+	if _, ok := d.GetOk("study"); !ok {
+		return diag.Errorf("Study must be provided for variableset creation")
 	}
 	params := map[string]string{
 		"study": d.Get("study").(string),
@@ -146,11 +153,6 @@ func resourceVariableSetDelete(ctx context.Context, d *schema.ResourceData, m in
 	var diags diag.Diagnostics
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
-}
-
-func studyDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
-	log.Printf("Ignoring study value in variable set resource")
-	return true
 }
 
 func variableDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {

@@ -27,10 +27,10 @@ resource "opencga_study" "a_cohort" {
 
 ### Required
 
-- `alias` (String)
+- `alias` (String) Study alias name
 - `description` (String)
-- `name` (String)
-- `project` (String)
+- `name` (String) Study long name
+- `project` (String) The `id` of the project this study is associated with.
 
 ### Read-Only
 

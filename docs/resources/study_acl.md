@@ -25,9 +25,13 @@ resource "opencga_study_acl" "study_acl" {
 
 ### Required
 
-- `member` (String)
-- `study` (String)
-- `template` (String)
+- `member` (String) This can be a user name or group id.
+- `study` (String) The id of the study that this ACL should be attached to.
+
+### Optional
+
+- `permissions` (String) Comma separated list of OpenCGA permissions. Refer to OpenCGA docs for allowed values.
+- `template` (String) Preset permissions, can be one of: admin, analyst, view_only.
 
 ### Read-Only
 
