@@ -29,12 +29,12 @@ resource "opencga_project" "new_project" {
 
 ### Required
 
-- `alias` (String)
-- `assembly` (String)
+- `alias` (String) Project alias. Do not supply the `null@` prefix seen in created resources. This will be added by OpenCGA automatically
+- `assembly` (String) Reference genome assembly name. i.e. GRCh38
 - `description` (String)
-- `name` (String)
-- `scientific_name` (String)
-- `taxonomy_code` (Number)
+- `name` (String) Long name for the project, spaces are allowed
+- `scientific_name` (String) Usually this is `Homo Sapiens`
+- `taxonomy_code` (Number) Usually this is `9606`
 
 ### Read-Only
 

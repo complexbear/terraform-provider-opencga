@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/mapstructure"
@@ -22,16 +23,25 @@ func resourceStudyACL() *schema.Resource {
 				Computed: true,
 			},
 			"member": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "This can be a user name or group id.",
 			},
 			"template": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:             schema.TypeString,
+				Optional:         true,
+				ValidateDiagFunc: validateTemplate,
+				Description:      "Preset permissions, can be one of: admin, analyst, view_only.",
+			},
+			"permissions": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Comma separated list of OpenCGA permissions. Refer to OpenCGA docs for allowed values.",
 			},
 			"study": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The id of the study that this ACL should be attached to.",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -46,10 +56,26 @@ func resourceStudyACLCreate(ctx context.Context, d *schema.ResourceData, m inter
 	client := m.(*APIClient)
 
 	payload := map[string]interface{}{
-		"action":   "SET",
-		"template": d.Get("template").(string),
-		"study":    d.Get("study").(string),
+		"action": "SET",
+		"study":  d.Get("study").(string),
 	}
+
+	// Template or permissions of the ACL
+	template, template_ok := d.GetOk("template")
+	permissions, permissions_ok := d.GetOk("permissions")
+	if !template_ok && !permissions_ok {
+		return diag.Errorf("Must provide either template or permissions")
+	}
+	if template_ok && permissions_ok {
+		return diag.Errorf("Must provide either template or permissions but not both")
+	}
+	if template_ok {
+		payload["template"] = template.(string)
+	}
+	if permissions_ok {
+		payload["permissions"] = permissions.(string)
+	}
+
 	path := fmt.Sprintf("studies/acl/%s/update", d.Get("member"))
 	req, err := buildRequest(client, path, payload, nil)
 	if err != nil {
@@ -100,7 +126,7 @@ func resourceStudyACLRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceStudyACLUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceStudyACLRead(ctx, d, m)
+	return resourceStudyACLCreate(ctx, d, m)
 }
 
 func resourceStudyACLDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -108,4 +134,16 @@ func resourceStudyACLDelete(ctx context.Context, d *schema.ResourceData, m inter
 	var diags diag.Diagnostics
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
+}
+
+func validateTemplate(v any, p cty.Path) diag.Diagnostics {
+	// Check template is a valid name
+	template := v.(string)
+	supported_templates := []string{"admin", "analyst", "view_only"}
+	for _, t := range supported_templates {
+		if t == template {
+			return nil
+		}
+	}
+	return diag.Errorf("template must be one of %s, got: %s", supported_templates, template)
 }

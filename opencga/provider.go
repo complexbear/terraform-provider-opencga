@@ -29,16 +29,19 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OPENCGA_USERNAME", nil),
+				Description: "Username for OpenCGA login, must be admin user. May also be set via OPENCGA_USERNAME env var.",
 			},
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("OPENCGA_PASSWORD", nil),
+				Description: "Password for OpenCGA login. Recommended to be set via OPENCGA_PASSWORD env var.",
 			},
 			"base_url": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Host URL for OpenCGA REST API, e.g. https://opencga.mycompany.com",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{

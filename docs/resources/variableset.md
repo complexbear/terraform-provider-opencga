@@ -27,11 +27,14 @@ resource "opencga_variableset" "new_var_set" {
 
 ### Required
 
-- `description` (String)
-- `name` (String)
-- `study` (String)
-- `unique` (Boolean)
-- `variables` (String)
+- `description` (String) Description, can be left blank
+- `name` (String) Variable Set name
+- `unique` (Boolean) True if there can only be 1 instance of this attached to a record item. False to allow for multiple instances.
+- `variables` (String) Json content representing the variables in this variable set. Json definitions can be read directly from the GelReportModels repo.
+
+### Optional
+
+- `study` (String) The study that this variableset belongs to
 
 ### Read-Only
 

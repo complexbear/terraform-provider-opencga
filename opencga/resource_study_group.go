@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -23,12 +22,14 @@ func resourceStudyGroup() *schema.Resource {
 				Computed: true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Group name",
 			},
 			"study": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The study that this group belongs to",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -61,7 +62,7 @@ func resourceStudyGroupCreate(ctx context.Context, d *schema.ResourceData, m int
 		return diag.FromErr(err)
 	}
 
-	d.SetId(strconv.Itoa(0))
+	d.SetId(studyGroup.Id)
 	resourceStudyGroupRead(ctx, d, m)
 	return diags
 }
@@ -86,13 +87,14 @@ func resourceStudyGroupRead(ctx context.Context, d *schema.ResourceData, m inter
 	if len(resp.Results) != 1 {
 		return diag.Errorf("Failed to find study group, got %d results", len(resp.Results))
 	}
-	var studyGroup []StudyGroup
-	err = mapstructure.Decode(resp.Results, &studyGroup)
+	var studyGroups []StudyGroup
+	err = mapstructure.Decode(resp.Results, &studyGroups)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.Set("name", studyGroup[0].Name)
+	d.SetId(studyGroups[0].Id)
+	d.Set("name", studyGroups[0].Name)
 	return diags
 }
 
