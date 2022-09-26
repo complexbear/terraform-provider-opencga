@@ -15,7 +15,7 @@ func resourceStudy() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceStudyCreate,
 		ReadContext:   resourceStudyRead,
-		// 		UpdateContext: resourceStudyUpdate,
+		UpdateContext: resourceStudyUpdate,
 		DeleteContext: resourceStudyDelete,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
@@ -23,11 +23,9 @@ func resourceStudy() *schema.Resource {
 				Computed: true,
 			},
 			"project": &schema.Schema{
-				Type:             schema.TypeString,
-				Required:         true,
-				ForceNew:         true,
-				DiffSuppressFunc: projectDiffSuppressFunc,
-				Description:      "The `id` of the project this study is associated with.",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The `id` of the project this study is associated with.",
 			},
 			"name": &schema.Schema{
 				Type:        schema.TypeString,
@@ -63,6 +61,10 @@ func resourceStudyCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		"alias":       d.Get("alias").(string),
 		"description": d.Get("description").(string),
 		"type":        "CASE_CONTROL",
+	}
+
+	if _, ok := d.GetOk("project"); !ok {
+		return diag.Errorf("Must supply project id for study creation")
 	}
 	params := map[string]string{
 		"projectId": d.Get("project").(string),
@@ -130,10 +132,4 @@ func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interfac
 	var diags diag.Diagnostics
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
-}
-
-func projectDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
-	// There is no way to know the project that a study is in, by querying the study directly.
-	// Therefore we shall ignore this field when performing the state diff.
-	return true
 }
