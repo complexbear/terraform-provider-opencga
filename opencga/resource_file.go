@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -31,13 +32,16 @@ func resourceFile() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
+				StateFunc:   uriStateFunc,
 				Description: "File absolute path (URI), e.g. /genomes/sample/A00001.cram",
 			},
 			"path": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
-				Description: "Directory path, this does not have to be the absolute path if a root is configured. e.g. sample/, /genomes/sample",
+				Type:                  schema.TypeString,
+				Required:              true,
+				ForceNew:              true,
+				DiffSuppressFunc:      pathDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "Directory path, this does not have to be the absolute path if a root is configured. e.g. sample/, /genomes/sample",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -129,4 +133,19 @@ func resourceFileDelete(ctx context.Context, d *schema.ResourceData, m interface
 	var diags diag.Diagnostics
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
+}
+
+func uriStateFunc(v interface{}) string {
+	// Account for the "file://" content that OpenCGA prepends to the user supplied uri content
+	s := v.(string)
+	if strings.Contains(s, "file://") {
+		return s
+	} else {
+		return "file://" + s
+	}
+}
+
+func pathDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
+	// Account for OpenCGA adding the filename to the end of the path in it's response
+	return newValue == d.Get("path").(string)
 }
