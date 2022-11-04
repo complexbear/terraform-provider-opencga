@@ -10,9 +10,10 @@ import (
 
 /*
 Config is a struct to hold global provider info
-    Username: the username to log in with
-    BaseUrl: the OpenCGA REST url, eg https://opencgainternal.test.aws.gel.ac/opencga/webservices
-    Token: this will be computed during login and stored for use in further API calls
+
+	Username: the username to log in with
+	BaseUrl: the OpenCGA REST url, eg https://opencgainternal.test.aws.gel.ac/opencga/webservices
+	Token: this will be computed during login and stored for use in further API calls
 */
 type ProviderConfig struct {
 	Username string
@@ -45,6 +46,7 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"opencga_file":        resourceFile(),
 			"opencga_project":     resourceProject(),
 			"opencga_study":       resourceStudy(),
 			"opencga_study_acl":   resourceStudyACL(),
