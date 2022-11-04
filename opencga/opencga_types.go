@@ -3,6 +3,19 @@ package opencga
 // This module contains structs to represent the data returned from OpenCGA API calls
 
 /*
+File represents a catalog entry with meta data on a file in a mounted filesystem
+*/
+type File struct {
+	Id        int    `mapstructure:"id"`
+	Name      string `mapstructure:"name"`
+	Type      string `mapstructure:"type"`
+	Format    string `mapstructure:"format"`
+	Bioformat string `mapstructure:"bioformat"`
+	Uri       string `mapstructure:"uri"`
+	Path      string `mapstructure:"path"`
+}
+
+/*
 Project represents the essential data we need to know about an opencga project
 This data may be required when creating studies, eg id
 

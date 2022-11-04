@@ -28,6 +28,10 @@ make run_example
 This will create a project, two studies attached to the project and a variable set for
 the second study. The variable set definitions can be found in `sample.json`.
 
+## Updating Terraform docs
+
+Run `go generate`. 
+
 ## Limitations
 
 Currently the provider cannot accurately compare existing state with the configuration of 

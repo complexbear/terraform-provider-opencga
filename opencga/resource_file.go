@@ -11,38 +11,33 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func resourceStudy() *schema.Resource {
+func resourceFile() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceStudyCreate,
-		ReadContext:   resourceStudyRead,
-		UpdateContext: resourceStudyUpdate,
-		DeleteContext: resourceStudyDelete,
+		CreateContext: resourceFileCreate,
+		ReadContext:   resourceFileRead,
+		UpdateContext: resourceFileUpdate,
+		DeleteContext: resourceFileDelete,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"project": &schema.Schema{
+			"study": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "The `id` of the project this study is associated with.",
+				Description: "The `id` of the study this file is associated with.",
 			},
-			"name": &schema.Schema{
+			"uri": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Study long name",
+				Description: "File absolute path (URI), e.g. /genomes/sample/A00001.cram",
 			},
-			"alias": &schema.Schema{
+			"path": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Study alias name",
-			},
-			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Description: "Directory path, this does not have to be the absolute path if a root is configured. e.g. sample/, /genomes/sample",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -51,26 +46,31 @@ func resourceStudy() *schema.Resource {
 	}
 }
 
-func resourceStudyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceFileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	// Reference implementation:
+	// https://gitlab.com/genomicsengland/bertha/core-bio-pipeline/-/blob/master/code/bertha-catalog/src/bertha/catalog/catalog.py
+
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	client := m.(*APIClient)
 
 	payload := map[string]interface{}{
-		"name":        d.Get("name").(string),
-		"alias":       d.Get("alias").(string),
-		"description": d.Get("description").(string),
-		"type":        "CASE_CONTROL",
+		"description":  "",
+		"relatedFiles": []string{},
+		"uri":          d.Get("uri").(string),
+		"path":         d.Get("path").(string),
 	}
 
-	if _, ok := d.GetOk("project"); !ok {
-		return diag.Errorf("Must supply project id for study creation")
+	if _, ok := d.GetOk("study"); !ok {
+		return diag.Errorf("Must supply study id for file linking")
 	}
 	params := map[string]string{
-		"projectId": d.Get("project").(string),
-		"exclude":   "groups",
+		"study":        d.Get("study").(string),
+		"type":         "FILE",
+		"parents":      "true",
+		"createFolder": "false",
 	}
-	path := "studies/create"
+	path := "files/link"
 	req, err := buildRequest(client, path, payload, params)
 	if err != nil {
 		return diag.FromErr(err)
@@ -79,27 +79,24 @@ func resourceStudyCreate(ctx context.Context, d *schema.ResourceData, m interfac
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	var study Study
-	err = mapstructure.Decode(resp.Results[0], &study)
+	var file File
+	err = mapstructure.Decode(resp.Results[0], &file)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(strconv.Itoa(study.Id))
-	resourceStudyRead(ctx, d, m)
+	d.SetId(strconv.Itoa(file.Id))
+	resourceFileRead(ctx, d, m)
 	return diags
 }
 
-func resourceStudyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceFileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	client := m.(*APIClient)
 
-	path := fmt.Sprintf("studies/%s/info", d.Id())
-	params := map[string]string{
-		"include": "name,description,alias",
-		"exclude": "groups",
-	}
+	path := fmt.Sprintf("files/%s/info", d.Id())
+	params := map[string]string{}
 	req, err := buildRequest(client, path, nil, params)
 	if err != nil {
 		return diag.FromErr(err)
@@ -109,25 +106,25 @@ func resourceStudyRead(ctx context.Context, d *schema.ResourceData, m interface{
 		return diag.FromErr(err)
 	}
 	if len(resp.Results) != 1 {
-		return diag.Errorf("Failed to find Study, got %d results", len(resp.Results))
+		return diag.Errorf("Failed to find File, got %d results", len(resp.Results))
 	}
-	var study Study
-	err = mapstructure.Decode(resp.Results[0], &study)
+	var file File
+	err = mapstructure.Decode(resp.Results[0], &file)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.Set("name", study.Name)
-	d.Set("description", study.Description)
-	d.Set("alias", study.Alias)
+	d.Set("name", file.Name)
+	d.Set("uri", file.Uri)
+	d.Set("path", file.Path)
 	return diags
 }
 
-func resourceStudyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceStudyRead(ctx, d, m)
+func resourceFileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return resourceFileCreate(ctx, d, m)
 }
 
-func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceFileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	log.Printf("Pretending to delete but doing nothing....")

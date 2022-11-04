@@ -34,7 +34,7 @@ resource "opencga_variableset" "new_var_set" {
 
 ### Optional
 
-- `study` (String) The study that this variableset belongs to
+- `study` (String) The study that this variable set belongs to
 
 ### Read-Only
 
