@@ -16,26 +16,12 @@ First, build and install the provider.
 make install
 ```
 
-The OpenCGA configuration parameters are in `example/full_setup/main.tf` in the `provider` block.
-By default this is set to configure the local OpenCGA service running.
+## Updating things
 
-Run the following command to initialize the workspace and apply the sample configuration.
-
-```shell
-make run_example
-```
-
-This will create a project, two studies attached to the project and a variable set for
-the second study. The variable set definitions can be found in `sample.json`.
-
-## Updating Terraform docs
-
-Run `go generate`. 
+For terraform documentation run `go generate`.  
+For versioning, update `VERSION` in `Makefile`.
 
 ## Limitations
-
-Currently the provider cannot accurately compare existing state with the configuration of 
-resources in the terraform `main.tf`. This causes terraform to try and replace the resources.
 
 The provider and OpenCGA API do not reliably support delete or update operations, so more
 work is needed in order to enable terraform to accurately detect changes.
@@ -50,8 +36,8 @@ Set the required username and base url for the OpenCGA instance you wish to conf
 
 ```
 provider "opencga" {
-  username = "bertha"
-  base_url = "https://opencgainternal.test.aws.gel.ac/opencga/webservices"
+  username = "user1"
+  base_url = "https://opencga.co.uk/opencga/webservices"
 }
 ```
 
