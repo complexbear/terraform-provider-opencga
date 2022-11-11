@@ -125,7 +125,8 @@ func resourceFileRead(ctx context.Context, d *schema.ResourceData, m interface{}
 }
 
 func resourceFileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceFileCreate(ctx, d, m)
+	// No updates supported
+	return resourceFileRead(ctx, d, m)
 }
 
 func resourceFileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
