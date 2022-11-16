@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/mapstructure"
@@ -41,6 +42,7 @@ func resourceFile() *schema.Resource {
 				ForceNew:              true,
 				DiffSuppressFunc:      pathDiffSuppressFunc,
 				DiffSuppressOnRefresh: true,
+				ValidateDiagFunc:      validatePathFunc,
 				Description:           "Directory path, this does not have to be the absolute path if a root is configured. e.g. sample/, /genomes/sample",
 			},
 		},
@@ -149,4 +151,12 @@ func uriStateFunc(v interface{}) string {
 func pathDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
 	// Account for OpenCGA adding the filename to the end of the path in it's response
 	return newValue == d.Get("path").(string)
+}
+
+func validatePathFunc(value interface{}, p cty.Path) diag.Diagnostics {
+	path := value.(string)
+	if strings.HasSuffix(path, "/") {
+		return nil
+	}
+	return diag.Errorf("path parameter must be a dir path and end in /")
 }
