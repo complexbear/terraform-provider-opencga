@@ -3,7 +3,7 @@ HOSTNAME=registry.terraform.io
 NAMESPACE=complexbear
 NAME=opencga
 BINARY=terraform-provider-${NAME}
-VERSION=0.3.1
+VERSION=0.3.2
 OS_ARCH=darwin_amd64
 
 default: help
