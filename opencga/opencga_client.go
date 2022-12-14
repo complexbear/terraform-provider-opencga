@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -25,6 +26,7 @@ type APIClient struct {
 	BaseUrl    string
 	Token      string
 	HttpClient *http.Client
+	Mutex      sync.Mutex // Used on API calls that are not thread safe
 }
 
 func newClient(baseUrl string) *APIClient {

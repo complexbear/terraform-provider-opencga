@@ -58,6 +58,11 @@ func resourceFileCreate(ctx context.Context, d *schema.ResourceData, m interface
 	var diags diag.Diagnostics
 	client := m.(*APIClient)
 
+	// OpenCGA has a race condition when linking files that share paths
+	// Use a mutex to ensure sequential execution
+	client.Mutex.Lock()
+	defer client.Mutex.Unlock()
+
 	payload := map[string]interface{}{
 		"description":  "",
 		"relatedFiles": []string{},
