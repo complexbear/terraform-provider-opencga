@@ -57,6 +57,12 @@ func resourceVariableSet() *schema.Resource {
 				DiffSuppressOnRefresh: true,
 				Description:           "Json content representing the variables in this variable set. Json definitions can be read directly from the GelReportModels repo.",
 			},
+			"checkDescription": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If true the description content will be checked against the state",
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,

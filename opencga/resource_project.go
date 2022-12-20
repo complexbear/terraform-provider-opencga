@@ -60,6 +60,12 @@ func resourceProject() *schema.Resource {
 				ForceNew:    true,
 				Description: "Reference genome assembly name. i.e. GRCh38",
 			},
+			"checkDescription": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If true the description content will be checked against the state",
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -159,7 +165,11 @@ func aliasStateFunc(v interface{}) string {
 }
 
 func descriptionDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
-	// Ignore description content
+	// Ignore description content if user wishes it
 	// This is also used in study and variableset resources
+	check, ok := d.GetOk("checkDescription")
+	if ok && check.(bool) {
+		return oldValue == newValue
+	}
 	return true
 }

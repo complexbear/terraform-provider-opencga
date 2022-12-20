@@ -45,6 +45,12 @@ func resourceStudy() *schema.Resource {
 				DiffSuppressFunc:      descriptionDiffSuppressFunc,
 				DiffSuppressOnRefresh: true,
 			},
+			"checkDescription": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If true the description content will be checked against the state",
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -134,4 +140,3 @@ func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interfac
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
 }
-
