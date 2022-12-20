@@ -36,6 +36,10 @@ resource "opencga_project" "new_project" {
 - `scientific_name` (String) Usually this is `Homo Sapiens`
 - `taxonomy_code` (Number) Usually this is `9606`
 
+### Optional
+
+- `checkDescription` (Boolean) If true the description content will be checked against the state
+
 ### Read-Only
 
 - `id` (String) The ID of this resource.
