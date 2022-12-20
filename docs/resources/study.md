@@ -33,7 +33,7 @@ resource "opencga_study" "a_cohort" {
 
 ### Optional
 
-- `checkDescription` (Boolean) If true the description content will be checked against the state
+- `check_description` (Boolean) If true the description content will be checked against the state
 - `project` (String) The `id` of the project this study is associated with.
 
 ### Read-Only

@@ -38,7 +38,7 @@ resource "opencga_project" "new_project" {
 
 ### Optional
 
-- `checkDescription` (Boolean) If true the description content will be checked against the state
+- `check_description` (Boolean) If true the description content will be checked against the state
 
 ### Read-Only
 

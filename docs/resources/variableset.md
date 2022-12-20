@@ -34,7 +34,7 @@ resource "opencga_variableset" "new_var_set" {
 
 ### Optional
 
-- `checkDescription` (Boolean) If true the description content will be checked against the state
+- `check_description` (Boolean) If true the description content will be checked against the state
 - `study` (String) The study that this variable set belongs to
 
 ### Read-Only
