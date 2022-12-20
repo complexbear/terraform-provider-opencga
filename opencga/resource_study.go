@@ -40,9 +40,18 @@ func resourceStudy() *schema.Resource {
 				Description: "Study alias name",
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:                  schema.TypeString,
+				Required:              true,
+				DiffSuppressFunc:      descriptionDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+			},
+			"check_description": &schema.Schema{
+				Type:                  schema.TypeBool,
+				Optional:              true,
+				Default:               true,
+				DiffSuppressFunc:      checkDescDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "If true the description content will be checked against the state",
 			},
 		},
 		Importer: &schema.ResourceImporter{

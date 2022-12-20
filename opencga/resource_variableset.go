@@ -43,9 +43,11 @@ func resourceVariableSet() *schema.Resource {
 				Description: "True if there can only be 1 instance of this attached to a record item. False to allow for multiple instances.",
 			},
 			"description": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Description, can be left blank",
+				Type:                  schema.TypeString,
+				Required:              true,
+				DiffSuppressFunc:      descriptionDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "Description, can be left blank",
 			},
 			"variables": &schema.Schema{
 				Type:                  schema.TypeString,
@@ -54,6 +56,14 @@ func resourceVariableSet() *schema.Resource {
 				DiffSuppressFunc:      variableDiffSuppressFunc,
 				DiffSuppressOnRefresh: true,
 				Description:           "Json content representing the variables in this variable set. Json definitions can be read directly from the GelReportModels repo.",
+			},
+			"check_description": &schema.Schema{
+				Type:                  schema.TypeBool,
+				Optional:              true,
+				Default:               true,
+				DiffSuppressFunc:      checkDescDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "If true the description content will be checked against the state",
 			},
 		},
 		Importer: &schema.ResourceImporter{
