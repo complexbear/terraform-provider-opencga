@@ -37,9 +37,10 @@ func resourceProject() *schema.Resource {
 				Description: "Project alias. Do not supply the `null@` prefix seen in created resources. This will be added by OpenCGA automatically",
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:                  schema.TypeString,
+				Required:              true,
+				DiffSuppressFunc:      descriptionDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
 			},
 			"scientific_name": &schema.Schema{
 				Type:        schema.TypeString,
@@ -155,4 +156,10 @@ func aliasStateFunc(v interface{}) string {
 	} else {
 		return "null@" + s
 	}
+}
+
+func descriptionDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
+	// Ignore description content
+	// This is also used in study and variableset resources
+	return true
 }

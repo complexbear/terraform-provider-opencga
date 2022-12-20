@@ -40,9 +40,10 @@ func resourceStudy() *schema.Resource {
 				Description: "Study alias name",
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:                  schema.TypeString,
+				Required:              true,
+				DiffSuppressFunc:      descriptionDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -133,3 +134,4 @@ func resourceStudyDelete(ctx context.Context, d *schema.ResourceData, m interfac
 	log.Printf("Pretending to delete but doing nothing....")
 	return diags
 }
+

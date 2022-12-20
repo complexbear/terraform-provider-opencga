@@ -43,9 +43,11 @@ func resourceVariableSet() *schema.Resource {
 				Description: "True if there can only be 1 instance of this attached to a record item. False to allow for multiple instances.",
 			},
 			"description": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Description, can be left blank",
+				Type:                  schema.TypeString,
+				Required:              true,
+				DiffSuppressFunc:      descriptionDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "Description, can be left blank",
 			},
 			"variables": &schema.Schema{
 				Type:                  schema.TypeString,
