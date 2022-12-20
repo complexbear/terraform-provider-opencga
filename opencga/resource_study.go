@@ -45,11 +45,13 @@ func resourceStudy() *schema.Resource {
 				DiffSuppressFunc:      descriptionDiffSuppressFunc,
 				DiffSuppressOnRefresh: true,
 			},
-			"checkDescription": &schema.Schema{
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "If true the description content will be checked against the state",
+			"check_description": &schema.Schema{
+				Type:                  schema.TypeBool,
+				Optional:              true,
+				Default:               true,
+				DiffSuppressFunc:      checkDescDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "If true the description content will be checked against the state",
 			},
 		},
 		Importer: &schema.ResourceImporter{

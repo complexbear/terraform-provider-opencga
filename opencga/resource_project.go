@@ -16,7 +16,7 @@ func resourceProject() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceProjectCreate,
 		ReadContext:   resourceProjectRead,
-		// 		UpdateContext: resourceProjectUpdate,
+		UpdateContext: resourceProjectUpdate,
 		DeleteContext: resourceProjectDelete,
 		Schema: map[string]*schema.Schema{
 			"id": &schema.Schema{
@@ -60,11 +60,13 @@ func resourceProject() *schema.Resource {
 				ForceNew:    true,
 				Description: "Reference genome assembly name. i.e. GRCh38",
 			},
-			"checkDescription": &schema.Schema{
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "If true the description content will be checked against the state",
+			"check_description": &schema.Schema{
+				Type:                  schema.TypeBool,
+				Optional:              true,
+				Default:               true,
+				DiffSuppressFunc:      checkDescDiffSuppressFunc,
+				DiffSuppressOnRefresh: true,
+				Description:           "If true the description content will be checked against the state",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -167,9 +169,14 @@ func aliasStateFunc(v interface{}) string {
 func descriptionDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
 	// Ignore description content if user wishes it
 	// This is also used in study and variableset resources
-	check, ok := d.GetOk("checkDescription")
+	check, ok := d.GetOk("check_description")
 	if ok && check.(bool) {
 		return oldValue == newValue
 	}
+	return true
+}
+
+func checkDescDiffSuppressFunc(k, oldValue, newValue string, d *schema.ResourceData) bool {
+	// This isn't stored as part of the state in the opencga instance
 	return true
 }
